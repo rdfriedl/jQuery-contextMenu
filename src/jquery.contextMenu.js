@@ -1245,10 +1245,6 @@
                         }
 
                         // disable key listener in <input>
-                        if (item.type && item.type !== 'sub' && item.type !== 'html' && item.type !== 'cm_seperator') {
-                            $input
-                                .on('focus', handle.focusInput)
-                                .on('blur', handle.blurInput);
 
                             if (item.events) {
                                 $input.on(item.events, opt);

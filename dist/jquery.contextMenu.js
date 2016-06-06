@@ -12,7 +12,6 @@
  *   MIT License http://www.opensource.org/licenses/mit-license
  *   GPL v3 http://opensource.org/licenses/GPL-3.0
  *
- * Date: 2016-05-24T20:50:18.774Z
  */
 
 (function (factory) {
@@ -1245,13 +1244,21 @@
                         }
 
                         // disable key listener in <input>
-                        if (item.type && item.type !== 'sub' && item.type !== 'html' && item.type !== 'cm_seperator') {
-                            $input
-                                .on('focus', handle.focusInput)
-                                .on('blur', handle.blurInput);
+                        if (item.type) {
+                            if(item.type !== 'sub' && item.type !== 'html' && item.type !== 'cm_seperator'){
+                                $input
+                                    .on('focus', handle.focusInput)
+                                    .on('blur', handle.blurInput);
 
+                                if (item.events) {
+                                    $input.on(item.events, opt);
+                                }
+                            }
+                        }
+
+                        // bind evnets
                             if (item.events) {
-                                $input.on(item.events, opt);
+                                item.$node.on(item.events, opt);
                             }
                         }
 
