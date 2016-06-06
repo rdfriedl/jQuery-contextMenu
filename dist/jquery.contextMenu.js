@@ -12,6 +12,7 @@
  *   MIT License http://www.opensource.org/licenses/mit-license
  *   GPL v3 http://opensource.org/licenses/GPL-3.0
  *
+ * Date: 2016-06-06T15:54:58.931Z
  */
 
 (function (factory) {
@@ -831,8 +832,8 @@
                     key = data.contextMenuKey,
                     callback;
 
-                // abort if the key is unknown or disabled or is a menu
-                if (!opt.items[key] || $this.is('.' + root.classNames.disabled + ', .context-menu-submenu, .context-menu-separator, .' + root.classNames.notSelectable)) {
+                // abort if it is disabled
+                if ($this.is('.' + root.classNames.disabled + ', .context-menu-separator, .' + root.classNames.notSelectable)) {
                     return;
                 }
 
@@ -1220,12 +1221,17 @@
                                 break;
 
                             case 'sub':
+                                $.each([opt, root], function (i, k) {
+                                    k.commands[key] = item;
+                                    if ($.isFunction(item.callback)) {
+                                        k.callbacks[key] = item.callback;
+                                    }
+                                });
                                 createNameNode(item).appendTo($t);
 
                                 item.appendTo = item.$node;
                                 op.create(item, root);
                                 $t.data('contextMenu', item).addClass('context-menu-submenu');
-                                item.callback = null;
                                 break;
 
                             case 'html':
@@ -1257,7 +1263,8 @@
                         }
 
                         // bind evnets
-                            if (item.events) {
+                        if (item.events) {
+                            if (!item.type || item.type === 'sub') {
                                 item.$node.on(item.events, opt);
                             }
                         }

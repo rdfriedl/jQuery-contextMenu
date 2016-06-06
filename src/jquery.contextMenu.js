@@ -832,8 +832,8 @@
                     key = data.contextMenuKey,
                     callback;
 
-                // abort if the key is unknown or disabled or is a menu
-                if (!opt.items[key] || $this.is('.' + root.classNames.disabled + ', .context-menu-submenu, .context-menu-separator, .' + root.classNames.notSelectable)) {
+                // abort if it is disabled
+                if ($this.is('.' + root.classNames.disabled + ', .context-menu-separator, .' + root.classNames.notSelectable)) {
                     return;
                 }
 
@@ -1221,12 +1221,17 @@
                                 break;
 
                             case 'sub':
+                                $.each([opt, root], function (i, k) {
+                                    k.commands[key] = item;
+                                    if ($.isFunction(item.callback)) {
+                                        k.callbacks[key] = item.callback;
+                                    }
+                                });
                                 createNameNode(item).appendTo($t);
 
                                 item.appendTo = item.$node;
                                 op.create(item, root);
                                 $t.data('contextMenu', item).addClass('context-menu-submenu');
-                                item.callback = null;
                                 break;
 
                             case 'html':
@@ -1245,9 +1250,22 @@
                         }
 
                         // disable key listener in <input>
+                        if (item.type) {
+                            if(item.type !== 'sub' && item.type !== 'html' && item.type !== 'cm_seperator'){
+                                $input
+                                    .on('focus', handle.focusInput)
+                                    .on('blur', handle.blurInput);
 
-                            if (item.events) {
-                                $input.on(item.events, opt);
+                                if (item.events) {
+                                    $input.on(item.events, opt);
+                                }
+                            }
+                        }
+
+                        // bind evnets
+                        if (item.events) {
+                            if (!item.type || item.type === 'sub') {
+                                item.$node.on(item.events, opt);
                             }
                         }
 
